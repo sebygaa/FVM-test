@@ -122,7 +122,7 @@ y0 = np.concatenate([C1_init, C2_init, q1_init, q2_init])
 # Boundary Conditions
 # %%
 # Pressure conditions
-P_end = 0.2       # (bar)
+P_end = 0.1       # (bar)
 Cv_out = 1E-2 
 
 P_feed = 1.5    # (bar)
