@@ -124,11 +124,12 @@ y0 = np.concatenate([C1_init, C2_init, q1_init, q2_init])
 # Boundary Conditions
 # %%
 # Pressure & velcotiy conditions
-P_end = 0.1       # (bar)
+P_end = 2       # (bar)
 Cv_out = 1E-2 
 u_feed = 0.00
 
 P_feed = 1.5    # (bar)
+
 # Inlet conditions
 T_feed = T_init
 C1_feed = 0.5*P_feed*1E5/R_gas/T_feed
@@ -230,14 +231,14 @@ def model_col(y,t ):
 # %%
 # Run 
 # %%
-t_ran = np.arange(0,10+0.0025,0.0025)
+t_ran = np.arange(0,20+0.0025,0.0025)
 y_res = odeint(model_col, y0, t_ran )
 print(y_res.shape)
 # %%
 # Graph drawing
 # %%
-t_sample = t_ran[::200]
-ii_arr = np.arange(len(t_ran))[::200]
+t_sample = t_ran[::400]
+ii_arr = np.arange(len(t_ran))[::400]
 
 ls_list = ['-','--','-.',':']
 cc = 0
@@ -251,5 +252,5 @@ for ii, tt in zip(ii_arr, t_sample):
 plt.legend(fontsize = 13, fancybox = True,
            shadow = True, ncol = 2,
            loc = 'upper center', 
-           bbox_to_anchor = (1.12, 1.17))
+           bbox_to_anchor = (1.32, 1.17))
 # %%
