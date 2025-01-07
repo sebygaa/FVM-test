@@ -208,17 +208,6 @@ def model_col(y,t ):
     dC2dt = D_AB*ddC2 - duC2dz - rho_s*(1-epsi)/epsi*dq2dt
 
     # Boundary conditions
-    #dC1dt[0] = D_AB*(C1[1]-2*C1[0]+C1_feed)/h**2 - (u_g[1]*C1[0] - u_feed*C1_feed)/h - rho_s*(1-epsi)/epsi*dq1dt[0]
-    #dC2dt[0] = D_AB*(C2[1]-2*C2[0]+C2_feed)/h**2 - (u_g[1]*C2[0] - u_feed*C2_feed)/h - rho_s*(1-epsi)/epsi*dq2dt[0]
-    #dC1dt[-1] = D_AB*(C1[-2]-2*C1[-1]+C1[-2])/h**2 - (u_out*C1[-1] - u_g[-2]*C1[-2])/h - rho_s*(1-epsi)/epsi*dq1dt[-1]
-    #dC2dt[-1] = D_AB*(C2[-2]-2*C2[-1]+C2[-2])/h**2 - (u_out*C2[-1] - u_g[-2]*C2[-2])/h - rho_s*(1-epsi)/epsi*dq2dt[-1]
-    
-    #dC1dt[0] = - (u_g[0]*C1[0] - u_feed*C1_feed)/h - rho_s*(1-epsi)/epsi*dq1dt[0]
-    #dC2dt[0] = - (u_g[0]*C2[0] - u_feed*C2_feed)/h - rho_s*(1-epsi)/epsi*dq2dt[0]
-
-    #dC1dt[-1] = - (u_out*C1[-1] - u_g[N-2]*C1[-2])/h - rho_s*(1-epsi)/epsi*dq1dt[-1]
-    #dC2dt[-1] = - (u_out*C2[-1] - u_g[N-2]*C2[-2])/h - rho_s*(1-epsi)/epsi*dq2dt[-1]
-    
     dC1dt[0] = - duC1dz[0] - rho_s*(1-epsi)/epsi*dq1dt[0]
     dC2dt[0] = - duC2dz[0] - rho_s*(1-epsi)/epsi*dq2dt[0]
 
@@ -253,4 +242,9 @@ plt.legend(fontsize = 13, fancybox = True,
            shadow = True, ncol = 2,
            loc = 'upper center', 
            bbox_to_anchor = (1.32, 1.17))
+plt.xlabel('z-axis (m)', 
+            fontsize = 13)
+plt.ylabel('Concentration (mol/m$^3$)',
+            fontsize = 13)
+plt.grid(ls = '--')
 # %%
