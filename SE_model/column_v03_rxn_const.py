@@ -149,7 +149,7 @@ y0 = np.concatenate([C1_init, C2_init, C3_init, C4_init,
 # Pressure & velcotiy conditions
 P_end = 3.0       # (bar)
 Cv_out = 1E-2 
-u_feed = 0.015
+u_feed = 0.01
 
 P_feed = 3.5    # (bar)
 
@@ -247,6 +247,10 @@ def model_col(y,t ):
     # Isotherm
     q1sta, q2sta, q3sta, q4sta = iso(P1,P2,P3,P4,)
 
+    # Reactions
+    r1 = 0.01*np.ones([N,])
+    r2 = 0.01*np.ones([N,])
+
     # Discretization
     ddC1 = dd@C1
     ddC2 = dd@C2
@@ -260,21 +264,21 @@ def model_col(y,t ):
     dq4dt = k4*(q4sta - q4)
 
     # Mass balanace
-    dC1dt = D_AB*ddC1 - duC1dz - rho_s*(1-epsi)/epsi*dq1dt
-    dC2dt = D_AB*ddC2 - duC2dz - rho_s*(1-epsi)/epsi*dq2dt
-    dC3dt = D_AB*ddC3 - duC3dz - rho_s*(1-epsi)/epsi*dq3dt
-    dC4dt = D_AB*ddC4 - duC4dz - rho_s*(1-epsi)/epsi*dq4dt
+    dC1dt = D_AB*ddC1 - duC1dz - rho_s*(1-epsi)/epsi*dq1dt+r1+r2 #H2
+    dC2dt = D_AB*ddC2 - duC2dz - rho_s*(1-epsi)/epsi*dq2dt-r1-r2 #CO
+    dC3dt = D_AB*ddC3 - duC3dz - rho_s*(1-epsi)/epsi*dq3dt-r1-r2 #H2O
+    dC4dt = D_AB*ddC4 - duC4dz - rho_s*(1-epsi)/epsi*dq4dt+r1+r2 #CO2
 
     # Boundary conditions
-    dC1dt[0] = - duC1dz[0] - rho_s*(1-epsi)/epsi*dq1dt[0]
-    dC2dt[0] = - duC2dz[0] - rho_s*(1-epsi)/epsi*dq2dt[0]
-    dC3dt[0] = - duC3dz[0] - rho_s*(1-epsi)/epsi*dq3dt[0]
-    dC4dt[0] = - duC4dz[0] - rho_s*(1-epsi)/epsi*dq4dt[0]
+    dC1dt[0] = - duC1dz[0] - rho_s*(1-epsi)/epsi*dq1dt[0] +r1[0]+r2[0]
+    dC2dt[0] = - duC2dz[0] - rho_s*(1-epsi)/epsi*dq2dt[0] -r1[0]-r2[0]
+    dC3dt[0] = - duC3dz[0] - rho_s*(1-epsi)/epsi*dq3dt[0] -r1[0]-r2[0]
+    dC4dt[0] = - duC4dz[0] - rho_s*(1-epsi)/epsi*dq4dt[0] +r1[0]+r2[0]
 
-    dC1dt[-1] = - duC1dz[-1] - rho_s*(1-epsi)/epsi*dq1dt[-1]
-    dC2dt[-1] = - duC2dz[-1] - rho_s*(1-epsi)/epsi*dq2dt[-1]
-    dC3dt[-1] = - duC3dz[-1] - rho_s*(1-epsi)/epsi*dq3dt[-1]
-    dC4dt[-1] = - duC4dz[-1] - rho_s*(1-epsi)/epsi*dq4dt[-1]
+    dC1dt[-1] = - duC1dz[-1] - rho_s*(1-epsi)/epsi*dq1dt[-1] +r1[-1]+r2[-1]
+    dC2dt[-1] = - duC2dz[-1] - rho_s*(1-epsi)/epsi*dq2dt[-1] -r1[-1]-r2[-1]
+    dC3dt[-1] = - duC3dz[-1] - rho_s*(1-epsi)/epsi*dq3dt[-1] -r1[-1]-r2[-1]
+    dC4dt[-1] = - duC4dz[-1] - rho_s*(1-epsi)/epsi*dq4dt[-1] +r1[-1]+r2[-1]
     
     dydt = np.concatenate([dC1dt,dC2dt, dC3dt, dC4dt, dq1dt, dq2dt, dq3dt,dq4dt])
     return dydt
@@ -296,8 +300,8 @@ C_ov = y_res[:, 0*N:1*N]+y_res[:, 1*N:2*N]+y_res[:, 2*N:3*N]+y_res[:, 3*N:4*N]
 ls_list = ['-','--','-.',':']
 cc = 0
 for ii, tt in zip(ii_arr, t_sample):
-    #C_samp = C_ov[ii,:]*R_gas*T_g/1E5
-    C_samp = y_res[ii,7*N:8*N]
+    C_samp = C_ov[ii,:]*R_gas*T_g/1E5
+    #C_samp = y_res[ii,7*N:8*N]
     plt.plot(z_dom, C_samp, 'k',
              linestyle = ls_list[cc%len(ls_list)],
              label = f't = {tt}'
