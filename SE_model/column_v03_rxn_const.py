@@ -296,7 +296,7 @@ t_sample = t_ran[::400]
 ii_arr = np.arange(len(t_ran))[::400]
 
 C_ov = y_res[:, 0*N:1*N]+y_res[:, 1*N:2*N]+y_res[:, 2*N:3*N]+y_res[:, 3*N:4*N]
-
+# Pressure
 ls_list = ['-','--','-.',':']
 cc = 0
 for ii, tt in zip(ii_arr, t_sample):
@@ -316,4 +316,50 @@ plt.xlabel('z-axis (m)',
 plt.ylabel('Concentration (mol/m$^3$)',
             fontsize = 13)
 plt.grid(ls = '--')
+plt.savefig('P_profile.png')
+
+# C4 Profile
+cc = 0
+for ii, tt in zip(ii_arr, t_sample):
+    #C_samp = C_ov[ii,:]*R_gas*T_g/1E5
+    C_samp = y_res[ii,3*N:4*N]
+    plt.plot(z_dom, C_samp, 'k',
+             linestyle = ls_list[cc%len(ls_list)],
+             label = f't = {tt}'
+             )
+    cc += 1
+plt.legend(fontsize = 13, fancybox = True,
+           shadow = True, ncol = 2,
+           loc = 'upper center', 
+           bbox_to_anchor = (1.32, 1.17))
+plt.xlabel('z-axis (m)', 
+            fontsize = 13)
+plt.ylabel('Concentration (mol/m$^3$)',
+            fontsize = 13)
+plt.grid(ls = '--')
+plt.savefig('C4_profile.png')
+
+# q4 Profile
+cc = 0
+for ii, tt in zip(ii_arr, t_sample):
+    #C_samp = C_ov[ii,:]*R_gas*T_g/1E5
+    C_samp = y_res[ii,7*N:8*N]
+    plt.plot(z_dom, C_samp, 'k',
+             linestyle = ls_list[cc%len(ls_list)],
+             label = f't = {tt}'
+             )
+    cc += 1
+plt.legend(fontsize = 13, fancybox = True,
+           shadow = True, ncol = 2,
+           loc = 'upper center', 
+           bbox_to_anchor = (1.32, 1.17))
+plt.xlabel('z-axis (m)', 
+            fontsize = 13)
+plt.ylabel('Concentration (mol/m$^3$)',
+            fontsize = 13)
+plt.grid(ls = '--')
+plt.savefig('q4_profile.png')
+
+
 # %%
+
