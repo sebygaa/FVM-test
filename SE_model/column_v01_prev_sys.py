@@ -77,14 +77,16 @@ plt.figure(dpi=300)
 plt.plot(z_dom[1:]-0.5*z_dom[1], u_test, 'o')
 #plt.plot(z_dom, P_ov_test)
 # Ergun for binary system
-def Ergun_bi(C_list, T_gas, z,
+def Ergun_qu(C_list, T_gas, z,
               d_p, mu, Mw_list, void_frac):
-    C1, C2 = C_list
-    Mw1,Mw2 = Mw_list
+    C1, C2, C3, C4 = C_list
+    Mw1,Mw2,Mw3,Mw4, = Mw_list
     C1_mid = (C1[1:] + C1[:-1])/2
     C2_mid = (C2[1:] + C2[:-1])/2
-    rho_g_tmp = C1_mid*Mw1 + C2_mid*Mw2
-    C_ov_tmp = C1 + C2
+    C3_mid = (C3[1:] + C3[:-1])/2
+    C4_mid = (C4[1:] + C4[:-1])/2
+    rho_g_tmp = C1_mid*Mw1 + C2_mid*Mw2 + C3_mid*Mw3+ C4_mid*Mw4
+    C_ov_tmp = C1 + C2 + C3 + C4
     P_ov_tmp = C_ov_tmp*R_gas*T_gas
     u_ret, arg_u_pos, arg_u_neg = Ergun(P_ov_tmp, 
                                         z, d_p, mu, rho_g_tmp, void_frac)
@@ -94,37 +96,58 @@ def Ergun_bi(C_list, T_gas, z,
 # %%
 # Isotherm Model 
 # %%
-qm1 = 0.5
-qm2 = 3
-b1 = 0.01
-b2 = 0.2
-def iso(P1,P2):
-    deno = 1+b1*P1 + b2*P2
+qm1 = 0.1 # H2
+qm2 = 0.3 # CO
+qm3 = 0.6 # H2O
+qm4 = 3.0 # CO2
+
+b1 = 0.05
+b2 = 0.1
+b3 = 0.3
+b4 = 0.5
+
+def iso(P1,P2,P3,P4):
+    deno = 1+b1*P1 + b2*P2 + b3*P3 + b4*P4
     nume1 = qm1*b1*P1
     nume2 = qm2*b2*P2
+    nume3 = qm3*b3*P3
+    nume4 = qm4*b4*P4
+
     q1 = nume1/deno
     q2 = nume2/deno
-    return q1, q2
+    q3 = nume3/deno
+    q4 = nume4/deno
+    return q1, q2, q3, q4
 
 # %%
 # Initial Values
 # %%
 # Initial P, T, C1, C2, q1, q2, y0
-P_init = 1.5E5*np.ones([N,])    # (Pa)
+P_init = 3E5*np.ones([N,])    # (Pa)
 T_init = 300
 R_gas = 8.3145
-C1_init = 0*P_init/R_gas/T_init*np.ones([N,])
-C1_init[:40] = 0.1*P_init[:40]/R_gas/T_init*np.ones([40,])
-C2_init = 1*P_init/R_gas/T_init*np.ones([N,])
-C2_init[:40] = 0.9*P_init[:40]/R_gas/T_init*np.ones([40,])
-q1_init, q2_init = iso(1*P_init*1E-5, 0*P_init*1E-5)
-y0 = np.concatenate([C1_init, C2_init, q1_init, q2_init])
+# Gas phase
+C1_init = 0.5*P_init/R_gas/T_init*np.ones([N,])
+C2_init = 0.5*P_init/R_gas/T_init*np.ones([N,])
+C3_init = 0.0*P_init/R_gas/T_init*np.ones([N,])
+C4_init = 0.0*P_init/R_gas/T_init*np.ones([N,])
+#Cov_init = C1_init + C2_init + C3_init + C4_init
+P1_init = C1_init*R_gas*T_init
+P2_init = C2_init*R_gas*T_init
+P3_init = C3_init*R_gas*T_init
+P4_init = C4_init*R_gas*T_init
+ 
+# Solid phase
+q1_init, q2_init, q3_init, q4_init = iso(P1_init*1E-5, P2_init*1E-5,
+                                         P3_init*1E-5, P4_init*1E-5,)
+y0 = np.concatenate([C1_init, C2_init, C3_init, C4_init,
+                    q1_init, q2_init, q3_init, q4_init])
 
 # %%
 # Boundary Conditions
 # %%
 # Pressure & velcotiy conditions
-P_end = 2       # (bar)
+P_end = 2.7       # (bar)
 Cv_out = 1E-2 
 u_feed = 0.00
 
@@ -132,8 +155,10 @@ P_feed = 1.5    # (bar)
 
 # Inlet conditions
 T_feed = T_init
-C1_feed = 0.5*P_feed*1E5/R_gas/T_feed
-C2_feed = 0.5*P_feed*1E5/R_gas/T_feed
+C1_feed = 0.2*P_feed*1E5/R_gas/T_feed # H2  (prod)
+C2_feed = 0.3*P_feed*1E5/R_gas/T_feed # CO  (reac)
+C3_feed = 0.3*P_feed*1E5/R_gas/T_feed # H2O (reac)
+C4_feed = 0.2*P_feed*1E5/R_gas/T_feed # CO2 (prod)
 
 # %%
 # Model for odeint
@@ -147,14 +172,17 @@ T_g = T_init
 rho_s = 1000    # (kg/m^3)
 epsi = 0.35     # voide fraction of pellet
 #k1, k2 = [0.2,0.2]
-k1, k2 = [0.002,0.002]
+k1, k2, k3, k4 = [0.002,]*4
 d_particle = 2E-3   # (m) : pellet particle size
 mu_gas = 1.8E-5 # (Pa s) : viscosity of gas (air)  
-Mw_gas = np.array([44,28])*1E-3 # (kg/mol) : molar weight for each component
+Mw_gas = np.array([2, 28, 18, 44])*1E-3 # (kg/mol) : molar weight for each component
 
 # Backflow at z = L 
-C1_L = 0*P_end*1E5/R_gas/T_g
-C2_L = 1*P_end*1E5/R_gas/T_g
+C1_L = 0.9*P_end*1E5/R_gas/T_g  # H2 (prod)
+C2_L = 0.05*P_end*1E5/R_gas/T_g # CO (reac)
+C3_L = 0.05*P_end*1E5/R_gas/T_g # H2O (reac)
+C4_L = 0*P_end*1E5/R_gas/T_g    # CO2 (prod)
+
 
 # PDE -> ODE model
 def model_col(y,t ):
