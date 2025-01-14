@@ -297,6 +297,7 @@ ii_arr = np.arange(len(t_ran))[::400]
 
 C_ov = y_res[:, 0*N:1*N]+y_res[:, 1*N:2*N]+y_res[:, 2*N:3*N]+y_res[:, 3*N:4*N]
 # Pressure
+plt.figure()
 ls_list = ['-','--','-.',':']
 cc = 0
 for ii, tt in zip(ii_arr, t_sample):
@@ -313,12 +314,13 @@ plt.legend(fontsize = 13, fancybox = True,
            bbox_to_anchor = (1.32, 1.17))
 plt.xlabel('z-axis (m)', 
             fontsize = 13)
-plt.ylabel('Concentration (mol/m$^3$)',
+plt.ylabel('Pressure (bar)',
             fontsize = 13)
 plt.grid(ls = '--')
-plt.savefig('P_profile.png')
+plt.savefig('res_P_profile.png', dpi = 150, bbox_inches = 'tight')
 
 # C4 Profile
+plt.figure()
 cc = 0
 for ii, tt in zip(ii_arr, t_sample):
     #C_samp = C_ov[ii,:]*R_gas*T_g/1E5
@@ -337,7 +339,7 @@ plt.xlabel('z-axis (m)',
 plt.ylabel('Concentration (mol/m$^3$)',
             fontsize = 13)
 plt.grid(ls = '--')
-plt.savefig('C4_profile.png')
+plt.savefig('res_C4_profile.png', dpi = 150, bbox_inches = 'tight')
 
 # q4 Profile
 cc = 0
@@ -355,10 +357,10 @@ plt.legend(fontsize = 13, fancybox = True,
            bbox_to_anchor = (1.32, 1.17))
 plt.xlabel('z-axis (m)', 
             fontsize = 13)
-plt.ylabel('Concentration (mol/m$^3$)',
+plt.ylabel('Uptake (mol/kg)',
             fontsize = 13)
 plt.grid(ls = '--')
-plt.savefig('q4_profile.png')
+plt.savefig('res_q4_profile.png', dpi = 150, bbox_inches = 'tight')
 
 
 # %%
