@@ -177,12 +177,17 @@ d_particle = 2E-3   # (m) : pellet particle size
 mu_gas = 1.8E-5 # (Pa s) : viscosity of gas (air)  
 Mw_gas = np.array([2, 28, 18, 44])*1E-3 # (kg/mol) : molar weight for each component
 
+# %%
+# REaction kinetics
+# %%
+k_r1 = 0.001 # (mol/m^3/s/bar^2) r1 = k_r1*P2*P3
+k_r2 = 0.002 # (mol/m^3/s/bar^2) r2 = k_r2*P1*P4
+
 # Backflow at z = L 
 C1_L = 0.9*P_end*1E5/R_gas/T_g  # H2 (prod)
 C2_L = 0.05*P_end*1E5/R_gas/T_g # CO (reac)
 C3_L = 0.05*P_end*1E5/R_gas/T_g # H2O (reac)
 C4_L = 0*P_end*1E5/R_gas/T_g    # CO2 (prod)
-
 
 # PDE -> ODE model
 def model_col(y,t ):
@@ -248,8 +253,8 @@ def model_col(y,t ):
     q1sta, q2sta, q3sta, q4sta = iso(P1,P2,P3,P4,)
 
     # Reactions
-    r1 = 0.01*np.ones([N,])
-    r2 = 0.01*np.ones([N,])
+    r1 = k_r1*P2*P3
+    r2 = k_r2*P1*P4
 
     # Discretization
     ddC1 = dd@C1
