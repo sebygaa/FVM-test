@@ -165,7 +165,7 @@ Mw_gas = np.array([2, 28, 18, 44])*1E-3 # (kg/mol) : molar weight for each compo
 # Reaction kinetics
 # %%
 K_eq = 10**(-2.4198 + 0.0003855*T_g + 2180.6/T_g) # Equilibrium constant
-k_r1 = 0.005 # (mol/m^3/s/bar^2) r1 = k_r1*P2*P3
+k_r1 = 0.01 # (mol/m^3/s/bar^2) r1 = k_r1*P2*P3
 k_r2 = k_r1/K_eq # (mol/m^3/s/bar^2) r2 = k_r2*P1*P4
 
 # Backflow at z = L 
@@ -503,9 +503,12 @@ F_feed_CO = u_feed*C2_feed*epsi*A_area
 F_end_CO = u_end*y_res[:,2*N]*epsi*A_area
 
 # number of mole of CO reacted
+#N_until = -64000-16000-16000-8000
 N_until = -1
 n_out_CO = simps(F_end_CO[1:N_until], t_ran[1:N_until])
-X_CO = (F_feed_CO*t_ran[N_until] - n_out_CO)/F_feed_CO/t_ran[N_until]
+n_ads_CO = simps(y_res[-1, 5*N:6*N], z_dom)*rho_s*(1-epsi)*A_area
+
+X_CO = (F_feed_CO*t_ran[N_until] - n_out_CO-n_ads_CO)/F_feed_CO/t_ran[N_until]
 print('Conversion of CO:\n', X_CO*100)
 print('Until', t_ran[N_until], 'sec')
 
@@ -520,7 +523,8 @@ plt.plot(t_ran, F_end_CO, 'k', label = 'CO')
 # %%
 
         
-''' LEGACY CODE'''
+# LEGACY CODES
+
 '''
 # Pressure Profile
 C_ov = y_res[:, 0*N:1*N]+y_res[:, 1*N:2*N]+y_res[:, 2*N:3*N]+y_res[:, 3*N:4*N]
