@@ -86,6 +86,23 @@ plt.ylabel('Concentration (mol/m^3)', fontsize = 12)
 plt.legend(fontsize=13)
 
 # %%
+# Mole fraction graph
+# %%
+plt.figure()
+C_ov = np.sum(C_res, axis=1)
+plt.plot(z, C_res[:,0]/C_ov, label='H$_{2}$', ls = '-')
+plt.plot(z, C_res[:,1]/C_ov, label='CO', ls = '--')
+plt.plot(z, C_res[:,2]/C_ov, label='H$_{2}$O', ls = '--')
+plt.plot(z, C_res[:,3]/C_ov, label='CO$_{2}$', ls = '-')
+
+plt.xlabel('Position (m)', fontsize = 12)
+plt.ylabel('Mole fraction (mol/mol)', fontsize = 12)
+plt.legend(fontsize=13)
+print('mole fraction of H2 at the exit:', C_res[-1,0]/C_ov[-1])
+print()
+print('Conversion of CO:', (C_feed[1] - C_res[-1,1])/C_feed[1])
+#print(C_res[-1,0]/C_ov[-1])
+# %%
 # Overall Conversion calculation
 
 # %%
