@@ -10,7 +10,7 @@ from scipy.integrate import odeint
 # Key parameters
 
 # %%
-N = 1000         # Number of points in the reactor
+NN = 1000         # Number of points in the reactor
 rho_cat = 1000  # (kg/m^3)
 epsi = 0.4      # void fraction
 u = 0.05        # (m/s) Advective velocity
@@ -69,7 +69,7 @@ print(C_feed)
 # %%
 # Solve the ODEs
 # %%
-z = np.linspace(0,2,N)
+z = np.linspace(0,2,NN)
 C_res = odeint(PBR, C_feed, z)
 
 # %%
@@ -100,7 +100,7 @@ plt.ylabel('Mole fraction (mol/mol)', fontsize = 12)
 plt.legend(fontsize=13)
 print('mole fraction of H2 at the exit:', C_res[-1,0]/C_ov[-1])
 print()
-print('Conversion of CO:', (C_feed[1] - C_res[-1,1])/C_feed[1])
+print('Conversion of CO:', (C_feed[1] - C_res[-1,1])/C_feed[1]*100)
 #print(C_res[-1,0]/C_ov[-1])
 # %%
 # Overall Conversion calculation
@@ -108,6 +108,6 @@ print('Conversion of CO:', (C_feed[1] - C_res[-1,1])/C_feed[1])
 # %%
 # Based on the feed CO concentration
 X_CO = (C_feed[1] - C_res[-1,1])/C_feed[1]
-print('The overall conversion of CO is:', X_CO)
+print('The overall conversion of CO is:', X_CO*100, '%')
 
 # %%

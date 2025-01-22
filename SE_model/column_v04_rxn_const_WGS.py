@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 T_g  = 773 # K # Temperature (400 oC)
 T_init = 773
 K_eq = 10**(-2.4198 + 0.0003855*T_g + 2180.6/T_g) # Equilibrium constant
-k_r1 = 0.1 # (mol/m^3/s/bar^2) r1 = k_r1*P2*P3
+k_r1 = 0.003 # (mol/m^3/s/bar^2) r1 = k_r1*P2*P3
 k_r2 = k_r1/K_eq # (mol/m^3/s/bar^2) r2 = k_r2*P1*P4
 
 # %%
