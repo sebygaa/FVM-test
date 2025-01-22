@@ -4,6 +4,15 @@ import numpy as np
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt
 # %%
+# Reaction parameters
+# %%
+T_g  = 773 # K # Temperature (400 oC)
+T_init = 773
+K_eq = 10**(-2.4198 + 0.0003855*T_g + 2180.6/T_g) # Equilibrium constant
+k_r1 = 0.1 # (mol/m^3/s/bar^2) r1 = k_r1*P2*P3
+k_r2 = k_r1/K_eq # (mol/m^3/s/bar^2) r2 = k_r2*P1*P4
+
+# %%
 # Spatial setting for z-axis
 # %%
 # Number of spatial node
@@ -105,7 +114,7 @@ def iso(P1,P2,P3,P4):
 # %%
 # Initial P, T, C1, C2, q1, q2, y0
 P_init = 3.2E5*np.ones([N,])    # (Pa)
-T_init = 773
+#T_init = 773
 R_gas = 8.3145
 # Gas phase
 C1_init = 1.0*P_init/R_gas/T_init*np.ones([N,]) # H2
@@ -123,7 +132,6 @@ q1_init, q2_init, q3_init, q4_init = iso(P1_init*1E-5, P2_init*1E-5,
                                          P3_init*1E-5, P4_init*1E-5,)
 y0 = np.concatenate([C1_init, C2_init, C3_init, C4_init,
                     q1_init, q2_init, q3_init, q4_init])
-
 # %%
 # Boundary Conditions
 # %%
@@ -131,7 +139,6 @@ y0 = np.concatenate([C1_init, C2_init, C3_init, C4_init,
 P_end = 3.0       # (bar)
 Cv_out = 2E-2 
 u_feed = 0.05
-
 P_feed = 4.5    # (bar)
 
 # Inlet conditions
@@ -140,14 +147,13 @@ C1_feed = 0.0*P_feed*1E5/R_gas/T_feed # H2  (prod)
 C2_feed = 0.5*P_feed*1E5/R_gas/T_feed # CO  (reac)
 C3_feed = 0.5*P_feed*1E5/R_gas/T_feed # H2O (reac)
 C4_feed = 0.0*P_feed*1E5/R_gas/T_feed # CO2 (prod)
-
 # %%
 # Model for odeint
 # %%
 # Additional parameters
 D_AB = 1E-8
 h = h_arr[0]
-T_g = T_init
+#T_g = T_init
 #u_g = 0.01      # (m/s) : advective velocity
 
 rho_s = 1000    # (kg/m^3)
@@ -164,9 +170,9 @@ Mw_gas = np.array([2, 28, 18, 44])*1E-3 # (kg/mol) : molar weight for each compo
 # %%
 # Reaction kinetics
 # %%
-K_eq = 10**(-2.4198 + 0.0003855*T_g + 2180.6/T_g) # Equilibrium constant
-k_r1 = 0.01 # (mol/m^3/s/bar^2) r1 = k_r1*P2*P3
-k_r2 = k_r1/K_eq # (mol/m^3/s/bar^2) r2 = k_r2*P1*P4
+#K_eq = 10**(-2.4198 + 0.0003855*T_g + 2180.6/T_g) # Equilibrium constant
+#k_r1 = 0.02 # (mol/m^3/s/bar^2) r1 = k_r1*P2*P3
+#k_r2 = k_r1/K_eq # (mol/m^3/s/bar^2) r2 = k_r2*P1*P4
 
 # Backflow at z = L 
 C1_L = 1.0*P_end*1E5/R_gas/T_g  # H2 (prod)
