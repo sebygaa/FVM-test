@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 # %%
 # Reaction parameters
 # %%
-T_g  = 773 # K # Temperature (400 oC)
-T_init = 773
+T_g  = 623 # K # Temperature (400 oC)
+T_init = 623
 K_eq = 10**(-2.4198 + 0.0003855*T_g + 2180.6/T_g) # Equilibrium constant
 k_r1 = 0.1 # (mol/m^3/s/bar^2) r1 = k_r1*P2*P3
 k_r2 = k_r1/K_eq # (mol/m^3/s/bar^2) r2 = k_r2*P1*P4
@@ -113,7 +113,7 @@ def iso(P1,P2,P3,P4):
 # Initial Values
 # %%
 # Initial P, T, C1, C2, q1, q2, y0
-P_init = 3.2E5*np.ones([N,])    # (Pa)
+P_init = 5.7E5*np.ones([N,])    # (Pa)
 #T_init = 773
 R_gas = 8.3145
 # Gas phase
@@ -136,10 +136,10 @@ y0 = np.concatenate([C1_init, C2_init, C3_init, C4_init,
 # Boundary Conditions
 # %%
 # Pressure & velcotiy conditions
-P_end = 3.0       # (bar)
+P_end = 5.5       # (bar)
 Cv_out = 2E-2 
 u_feed = 0.05
-P_feed = 4.5    # (bar)
+P_feed = 7.0    # (bar)
 
 # Inlet conditions
 T_feed = T_init
@@ -464,6 +464,7 @@ create_gif_fixed_yaxis(y_res[:, 4*N:5*N], z_dom, t_sample, ii_arr,
                        'H$_{2}$ uptake (mol/kg)', 
                        'results_gif/res_q1_profile_H2.gif',
                        y_limits = [-0.0001, 0.005],interval = 100) # H2
+
 create_gif_fixed_yaxis(y_res[:, 5*N:6*N], z_dom, t_sample, ii_arr,
                        'CO uptake (mol/kg)', 
                        'results_gif/res_q2_profile_CO.gif',
@@ -473,11 +474,11 @@ create_gif_fixed_yaxis(y_res[:, 6*N:7*N], z_dom, t_sample, ii_arr,
                        'H$_{2}$O uptake (mol/kg)', 
                        'results_gif/res_q3_profile_H2O.gif',
                        y_limits = [-0.002, 0.2],interval = 100) # H2O
-
+#%%
 create_gif_fixed_yaxis(y_res[:, 7*N:8*N], z_dom, t_sample, ii_arr,
-                       'CO$_{2}$ Concentration (mol/m$^{3}$)', 
+                       'CO$_{2}$ uptkae (mol/kg)', 
                        'results_gif/res_q4_profile_CO2.gif',
-                       y_limits = [-0.03, 1.2],interval = 100) # CO2
+                       y_limits = [-0.03, 1.7],interval = 100) # CO2
 
 # %%
 # Mole fraction
@@ -485,14 +486,17 @@ create_gif_fixed_yaxis(y_res[:, 0*N:1*N]/C_ov, z_dom, t_sample, ii_arr,
                        'H$_{2}$ mole frac. (mol/mol)',
                        'results_gif/res_y1_profile_H2.gif',
                        y_limits=[-0.01, 1.05], interval=100) # H2
+
 create_gif_fixed_yaxis(y_res[:, 1*N:2*N]/C_ov, z_dom, t_sample, ii_arr,
                        'CO mole frac. (mol/mol)',
                        'results_gif/res_y2_profile_CO.gif',
                        y_limits=[-0.01, 1.05], interval=100) # CO
+
 create_gif_fixed_yaxis(y_res[:, 2*N:3*N]/C_ov, z_dom, t_sample, ii_arr,
                        'H$_{2}$O mole frac. (mol/mol)',
                        'results_gif/res_y3_profile_H2O.gif',
                        y_limits=[-0.01, 1.05], interval=100) # H2O
+
 create_gif_fixed_yaxis(y_res[:, 3*N:4*N]/C_ov, z_dom, t_sample, ii_arr,
                        'CO$_{2}$ mole frac. (mol/mol)',
                        'results_gif/res_y4_profile_CO2.gif',
