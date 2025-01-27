@@ -455,7 +455,6 @@ class AdsCatColumn:
         plt.close(fig)
 
 
-
     def __str__(self):
         str_to_print = ""
         str_to_print+= "pac_info: " + str(self.is_pac_info) + '\n'
@@ -591,17 +590,9 @@ if __name__ == '__main__':
                      filename='test_res/sim_c01_rxn_P1.png',
                      figsize = figsize_test,
                      show = ShowGraph)
-#    acc1.graph_timelapse('P', t_frame = 2000,
-#                         label = 'Pressure (bar)',
-#                         filename='test_res/sim_c01_rxn_P.gif',
-#                         figsize = None,
-#                         y_limits = [4.5,7.7], interval = 200)
     acc1.graph_timelapse('P',t_frame=2000,label='P (bar)',
                          filename ='test_res/sim_c01_rxn_P.gif',
                          y_limits=[4.5,7.4], interval = 100)
-    #C_ovv = acc1.y_res[-1,0:N] + acc1.y_res[-1,N:2*N] + acc1.y_res[-1,2*N:3*N] + acc1.y_res[-1,3*N:4*N]
-    #plt.figure()
-    #plt.plot(acc1.z, C_ovv)
-    #plt.show()
+    # mole fraction?
 
 
