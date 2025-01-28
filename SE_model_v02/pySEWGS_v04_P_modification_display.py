@@ -54,7 +54,6 @@ Mw_gas = np.array([2,28, 18, 44])*1E-3
 R_gas = 8.314 # J/mol/K
 D_AB = 1E-8 # m2/s
 
-
 class AdsCatColumn:
     # 1) Define the AdsCatColumn class
     def __init__(self, L, N, ):
@@ -160,7 +159,7 @@ class AdsCatColumn:
         self.Cv_end = Cv_end
         self.is_outlet = True
 
-    # 7-1) Define the initial conditions
+    # 7-1) Define initial conditions
     def init_condi_C(self, C_init, q_init, T_init, equil = False, ):
         self.C_init = C_init
         self.q_init = q_init
@@ -175,7 +174,7 @@ class AdsCatColumn:
             print('Isotherm model is not defined')
         self.is_init = True
 
-    # 7-2) Define the a
+    # 7-2) Define initial conditions
     def init_condi_y(self, P_init, y_init, q_init, T_init, equil = False, ):
         #self.C_init = C_init
         C1_init = y_init[0]*P_init*1E5/8.3145/T_init
@@ -367,7 +366,16 @@ class AdsCatColumn:
             y_res_rev = np.concatenate(y_res_list, axis = 1)
             self.y_res = y_res_rev
         self.t_span = t_span
-        
+
+        C_list = []
+        q_list = []
+        for ii in range(4):
+            C_list.append(y_res[:, ii*self.N:(ii+1)*self.N])
+        for ii in range(4, 8):
+            q_list.append(y_res[:, ii*self.N:(ii+1)*self.N])
+        self.C_res = C_list
+        self.q_res = q_list
+
     # Graph: still cuts for every "t_frame" of "t_span"
     def graph_still(self, y_index, t_frame, label, filename, 
                     bbox_pos=[1.42, 0.92], figsize = None, show = False,):
@@ -385,6 +393,41 @@ class AdsCatColumn:
             y_samp =P_ov
         else:
             y_samp = self.y_res[: , y_index*self.N : (y_index+1)*self.N]
+
+        for ii, tt in zip(t_index, self.t_span):
+            C_samp = y_samp[ii,:]
+            plt.plot(self.z, C_samp, 'k',
+                    linestyle = ls_list[cc%len(ls_list)],
+                    label = f't = {tt} sec'
+                    )
+            cc += 1
+        plt.legend(fontsize = 13, fancybox = True,
+                shadow = True, ncol = 2,
+                loc = 'upper center',
+                bbox_to_anchor = bbox_pos,)
+        plt.xlabel('z-axis (m)',
+                    fontsize = 13)
+        plt.ylabel(label, fontsize = 13)
+        plt.grid(ls = '--')
+        plt.savefig(filename, dpi = 150, bbox_inches = 'tight')
+        if show:
+            plt.show()
+    def graph_still_mol(self, y_index, t_frame, label, filename, 
+                        bbox_pos=[1.42, 0.92], figsize = None, show = False,):
+        t_index = range(0, len(self.t_span), t_frame)
+
+        plt.figure(tight_layout = True, figsize = figsize)
+        cc = 0
+        ls_list = ['-','--','-.',':']
+        C_ov = np.zeros_like(self.C_res[0])
+        for cc in self.C_res:
+            C_ov += cc
+
+        if y_index == 'P':
+            P_ov = C_ov*self.T_feed*R_gas/1E5
+            y_samp =P_ov
+        else:
+            y_samp = self.C_res[y_index]/C_ov
 
         for ii, tt in zip(t_index, self.t_span):
             C_samp = y_samp[ii,:]
@@ -454,6 +497,111 @@ class AdsCatColumn:
         ani.save(filename, writer='Pillow', fps=1000/interval)
         plt.close(fig)
 
+    
+    def display_pac_info(self):
+        """
+        Display packing information.
+        """
+        if self.is_pac_info:
+            return (
+                f"Packing Information:\n"
+                f"  Void Fraction (ε): {self.epsi}\n"
+                f"  Catalyst Fraction (x_cat): {self.x_cat}\n"
+                f"  Particle Diameter (d_p): {self.d_particle} m"
+            )
+        else:
+            return "Packing information has not been provided yet."
+
+    def display_ads_info(self):
+        """
+        Display adsorbent information.
+        """
+        if self.is_ads_info:
+            return (
+                f"Adsorbent Information:\n"
+                f"  Adsorbent Density (ρ_ads): {self.rho_ads} kg/m³\n"
+                f"  Mass Transfer Coefficients (k_list): {self.k_list}\n"
+                f"  Isotherm Model: Defined"
+            )
+        else:
+            return "Adsorbent information has not been provided yet."
+
+    def display_cat_info(self):
+        """
+        Display catalyst reaction information.
+        """
+        if self.is_cat_info:
+            return (
+                f"Catalyst Reaction Information:\n"
+                f"  Reference Forward Reaction Rate (k_f_ref): {self.k_f_ref}\n"
+                f"  Reference Temperature (T_ref): {self.T_ref} K\n"
+                f"  Activation Energy (E_a_f): {self.E_a_f} J/mol\n"
+                f"  Catalyst Density (ρ_cat): {self.rho_cat} kg/m³\n"
+                f"  Reaction Orders: {self.orders}"
+            )
+        else:
+            return "Catalyst reaction information has not been provided yet."
+
+    def display_feed_condi(self):
+        """
+        Display feed condition information.
+        """
+        if self.is_feed:
+            return (
+                f"Feed Conditions:\n"
+                f"  Mole Fractions (y_feed): {self.y_feed}\n"
+                f"  Feed Pressure (P_feed): {self.P_feed} bar\n"
+                f"  Feed Temperature (T_feed): {self.T_feed} K\n"
+                f"  Feed Velocity (u_feed): {self.u_feed} m/s\n"
+                f"  Valve Constant (Cv_in): {self.Cv_in if self.Cv_in else 'Not provided'}"
+            )
+        else:
+            return "Feed condition information has not been provided yet."
+
+    def display_outlet_condi(self):
+        """
+        Display outlet condition information.
+        """
+        if self.is_outlet:
+            return (
+                f"Outlet Conditions:\n"
+                f"  Mole Fractions (y_end): {self.y_end}\n"
+                f"  Outlet Pressure (P_end): {self.P_end} bar\n"
+                f"  Outlet Temperature (T_end): {self.T_end} K\n"
+                f"  Outlet Valve Constant (Cv_end): {self.Cv_end}"
+            )
+        else:
+            return "Outlet condition information has not been provided yet."
+
+    def display_init_condi(self):
+        """
+        Display initial condition information.
+        """
+        if self.is_init:
+            return (
+                f"Initial Conditions:\n"
+                f"  Initial Concentrations (C_init): {self.C_init}\n"
+                f"  Initial Adsorbed Amounts (q_init): {self.q_init}\n"
+                f"  Initial Temperature (T_init): {self.T_init} K"
+            )
+        else:
+            return "Initial condition information has not been provided yet."
+
+    def display_feed_info(self):
+        """
+        Display feed-related details (additional to feed conditions).
+        """
+        if self.is_feed:
+            return (
+                f"Feed Information:\n"
+                f"  Feed Mole Fractions (y_feed): {self.y_feed}\n"
+                f"  Feed Velocity (u_feed): {self.u_feed} m/s\n"
+                f"  Feed Temperature (T_feed): {self.T_feed} K\n"
+                f"  Feed Pressure (P_feed): {self.P_feed} bar\n"
+                f"  Feed Concentrations (C_feed): {self.C_feed}"
+            )
+        else:
+            return "Feed information has not been provided yet."
 
     def __str__(self):
         str_to_print = ""
@@ -554,9 +702,31 @@ if __name__ == '__main__':
     #acc1.init_condi_C(C_init, None, T_init, equil = True, )
     print(acc1)
     #print(acc1.q_init)
+    
 
+# %%
+# Check the information
+# & RUN the simulations
+# with display methods 
+# %%
+if __name__ == '__main__':
+    ## 8) Run simulations
     t_ran = np.arange(0,320+0.0025, 0.0025)
     acc1.run_mamo(t_ran,)
+    
+    ## 9) Display the information
+    print(acc1.display_pac_info())
+    print(acc1.display_ads_info())
+    print(acc1.display_cat_info())
+    print(acc1.display_feed_condi())
+    print(acc1.display_outlet_condi())
+    print(acc1.display_init_condi())
+    print(acc1.display_feed_info())
+
+# %%
+# Graph drawing
+# %%
+if __name__ == '__main__':
     import os
     os.makedirs('test_res', exist_ok = True)
     figsize_test = [12.5,5]
@@ -593,6 +763,29 @@ if __name__ == '__main__':
     acc1.graph_timelapse('P',t_frame=2000,label='P (bar)',
                          filename ='test_res/sim_c01_rxn_P.gif',
                          y_limits=[4.5,7.4], interval = 100)
+    
     # mole fraction grahp?
-
+    acc1.graph_still_mol(0, t_frame = 5000,
+                     label = 'H$_{2}$ mole frac.',
+                     filename='test_res/sim_c01_rxn_y1.png',
+                     figsize = figsize_test,
+                     show = ShowGraph)
+    
+    acc1.graph_still_mol(1, t_frame = 5000,
+                     label = 'CO mole frac.',
+                     filename='test_res/sim_c01_rxn_y2.png',
+                     figsize = figsize_test,
+                     show = ShowGraph)
+    
+    acc1.graph_still_mol(2, t_frame = 5000,
+                     label = 'H$_{2}$O mole frac.',
+                     filename='test_res/sim_c01_rxn_y3.png',
+                     figsize = figsize_test,
+                     show = ShowGraph)
+    
+    acc1.graph_still_mol(3, t_frame = 5000,
+                     label = 'CO$_{2}$ mole frac.',
+                     filename='test_res/sim_c01_rxn_y4.png',
+                     figsize = figsize_test,
+                     show = ShowGraph)
 
