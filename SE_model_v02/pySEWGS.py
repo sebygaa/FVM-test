@@ -359,10 +359,10 @@ class AdsCatColumn:
             y_res_list = []
             
             for ii in range(4):
-                C_tmp = y_res[ :, ii*N : (ii+1)*N ]@self.Mat_rev
+                C_tmp = y_res[ :, ii*self.N : (ii+1)*self.N ]@self.Mat_rev
                 y_res_list.append(C_tmp)
             for ii in range(4,8):
-                q_tmp = y_res[ :, ii*N : (ii+1)*N ]@self.Mat_rev
+                q_tmp = y_res[ :, ii*self.N : (ii+1)*self.N ]@self.Mat_rev
                 y_res_list.append(q_tmp)
             y_res = np.concatenate(y_res_list, axis=1)
             self.y_res = y_res
@@ -378,6 +378,23 @@ class AdsCatColumn:
         self.C_res = C_list
         self.q_res = q_list
         # Results in dictionary ? No !
+
+    # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    # =-=-=- Next Initial  -=-=-=-=-=
+    # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    def next_init(self, Cq_return = False, change_init = True):
+        C_init = [[],]*4
+        q_init = [[],]*4
+        for ii in range(4):
+            C_init[ii] = self.C_res[ii][-1,:]
+            q_init[ii] = self.q_res[ii][-1,:]
+        if change_init:
+            self.C_init = C_init
+            self.q_init = q_init
+        if Cq_return:
+            return C_init, q_init
+        
+
 
     # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     # =-=-=- Graph drawing -=-=-=-=-=
@@ -400,7 +417,7 @@ class AdsCatColumn:
         else:
             y_samp = self.y_res[: , y_index*self.N : (y_index+1)*self.N]
 
-        for ii, tt in zip(t_index, self.t_span):
+        for ii, tt in zip(t_index, self.t_span[t_index]):
             C_samp = y_samp[ii,:]
             plt.plot(self.z, C_samp, 'k',
                     linestyle = ls_list[cc%len(ls_list)],
@@ -443,7 +460,7 @@ class AdsCatColumn:
         # For loop
         cc = 0
         ls_list = ['-','--','-.',':']
-        for ii, tt in zip(t_index, self.t_span):
+        for ii, tt in zip(t_index, self.t_span[t_index]):
             C_samp = y_samp[ii,:]
             plt.plot(self.z, C_samp, 'k',
                     linestyle = ls_list[cc%len(ls_list)],
@@ -471,7 +488,7 @@ class AdsCatColumn:
                         label, filename, figsize=None,
                         bbox_pos=[1.42, 0.92], 
                         y_limits=None, interval=100):
-        fig, ax = plt.subplots(figsize=figsize)
+        fig, ax = plt.subplots(figsize=figsize, dpi = 300)
         line, = ax.plot([], [], 'k-', lw=2)
         ax.set_xlabel('z-axis (m)', fontsize=13)
         ax.set_ylabel(label, fontsize=13)
@@ -514,6 +531,54 @@ class AdsCatColumn:
 
         ani.save(filename, writer='Pillow', fps=1000/interval)
         plt.close(fig)
+
+
+    def graph_timelapse_y(self, y_index, t_frame, 
+                        label, filename, figsize=None,
+                        bbox_pos=[1.42, 0.92], 
+                        y_limits=None, interval=100):
+        fig, ax = plt.subplots(figsize=figsize, dpi = 300)
+        line, = ax.plot([], [], 'k-', lw=2)
+        ax.set_xlabel('z-axis (m)', fontsize=13)
+        ax.set_ylabel(label, fontsize=13)
+        ax.grid(ls='--')
+        ax.set_xlim([(2*self.z[0]-self.z[1]), (2*self.z[-1]-self.z[-2])])
+        if y_limits:
+            ax.set_ylim(y_limits)
+
+        index = np.arange(0, len(self.t_span), t_frame)
+        t_span = self.t_span[index]
+
+        # Ensure y_targ aligns with the indices
+        # Part 1
+        C_res = self.C_res
+        C_ov = C_res[0] + C_res[1]+C_res[2]+C_res[3]
+
+        if y_index == 'P':
+            y_targ = C_ov * R_gas * self.T_feed / 1E5
+        else:
+            y_targ = C_res[y_index]/C_ov
+
+        # Ensure `t_span` length matches frames
+        def update(frame_idx):
+            tt = t_span[frame_idx]
+            C_samp = y_targ[index[frame_idx], :]
+            line.set_data(self.z, C_samp)
+            ax.set_title(f'Profile at t = {tt:.2f} sec', fontsize=14)
+            return line,
+
+        def init():
+            line.set_data([], [])
+            return line,
+
+        ani = animation.FuncAnimation(fig, update, 
+                                    frames=len(index), 
+                                    init_func=init, 
+                                    blit=True, interval=interval)
+
+        ani.save(filename, writer='Pillow', fps=1000/interval)
+        plt.close(fig)
+
 
     # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     # =-=-=- Display info =-=-=-=-=-=
@@ -680,7 +745,7 @@ class AdsCatColumn:
         print('P_end:', self.P_end)
         '''
 
-        if P_bed_end < P_end:
+        if P_bed_end < self.P_end:
             success = False
             print('Target P_mid is too low for given P_end!')
             return Cv_out_set, P_bed_begin, success
