@@ -31,10 +31,10 @@ os.makedirs(fol_nam, exist_ok=True)
 
 for pp in P_arr:
     for tt in T_arr:
+        tic = time.time()
         run_comm = 'python '+'SEWGS_argv.py '+ f'{tt} {pp}'
         os.system(run_comm)
         print(run_comm)
-        tic = time.time()
         
         cpu_perc = cpucheck()
         for ii in range(100000):
