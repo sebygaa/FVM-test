@@ -229,7 +229,7 @@ class AdsCatColumn:
             print("The outlet info is not defined")
             return
         if self.forward_flow:
-            print("Check the flow direction: Forward")
+            #print("Check the flow direction: Forward")
             y0 = np.concatenate([self.C_init[0], self.C_init[1],
                                  self.C_init[2], self.C_init[3],
                                  self.q_init[0], self.q_init[1], 
