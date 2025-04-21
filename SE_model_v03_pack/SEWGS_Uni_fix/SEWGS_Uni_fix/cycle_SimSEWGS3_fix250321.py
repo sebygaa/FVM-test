@@ -10,9 +10,14 @@ from datetime import datetime
 import time
 import math
 
+
+# %%
+# 4/21 -> x_cat = 0.6/ 0.2 => 0.4 uniform
+# 4/21 -> k_f_ref = 1E-3 => 3E-3
+# 4/21 -> k_list = [0.5,]*4  => [0.8,]*4
+
 # %%
 # Adsorbent & Catalyst Conditions
-
 # %%
 ## 1) Define AdsCatCol
 ## 2) pac_info: packing info
@@ -34,8 +39,8 @@ R_gas = 8.3145
 #x_cat_array[21:] = 0.2  # 뒤쪽 20개는 0.2
 #x_cat = x_cat_array
 
-ratio_front = 0.2
-ratio_back = 0.6
+ratio_front = 0.4
+ratio_back = 0.4
 xcat_avg = 0.4
 
 
@@ -65,8 +70,10 @@ rho_ads = 1000 # kg/m3  //density of adsorbent
 rho_cat = 1000 # kg/m3  //density of catalyst
 
 #k_list = [0.05,]*4
-k_list = [0.5,]*4  # Adsorption rate constant (1/s)
-k_f_ref = 1E-3      # Kinetic parameter at T_ref : mol / (kg s) / (bar^2)
+k_list = [0.8,]*4  # Adsorption rate constant (1/s)
+# Previously k_list = [0.5,]*4
+k_f_ref = 3E-3      # Kinetic parameter at T_ref : mol / (kg s) / (bar^2)
+# Previously k_f_ref = 1E-3
 T_ref = 623         # K
 E_a_f = 1E4         # J/mol
 
@@ -135,7 +142,7 @@ tau1 = t_ran1[-1]/3
 tau2 = t_ran2[-1]/3
 
 A_cros = np.pi / 4 * (0.2) ** 2  #cros-sectional area
-cycle_N = 5 # number of cycle
+cycle_N = 20 # number of cycle
 
 
 
@@ -483,7 +490,7 @@ for i in range(0, cycle_N):
                         show = ShowGraph_mol)
 
     #Gif making
-    if i+1 in [1, 25, 50]:
+    if i+1 in [1, 2, 3, 4, 5, 10, 20, 25, 50]:
         acc1.graph_timelapse(0,t_frame=1000,
                             label=f'No.{i+1} H$_{2}$ Concentration (mol/m$^{3}$)',
                             filename =dir_name2+'/'+f_prefix2g+f'c1_cycle{i+1}.gif',
