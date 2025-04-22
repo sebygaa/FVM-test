@@ -15,7 +15,7 @@ import math
 # 4/21 -> x_cat = 0.6/ 0.2 => 0.4 uniform
 # 4/21 -> k_f_ref = 1E-3 => 3E-3
 # 4/21 -> k_list = [0.5,]*4  => [0.8,]*4
-
+# 4/22 -> k_list = [0.8,]*4 => [1.5,]*4
 # %%
 # Adsorbent & Catalyst Conditions
 # %%
@@ -310,7 +310,7 @@ for i in range(0, cycle_N):
                         show = ShowGraph_mol)
     
     #Gif making
-    if i+1 in [1, 25, 50]:
+    if i+1 in [1,2,3,4,5,10,20, 25, 50]:
         acc1.graph_timelapse(0,t_frame=1000,
                             label=f'No.{i+1} H$_{2}$ Concentration (mol/m$^{3}$)',
                             filename =dir_name1+'/'+f_prefix1g+f'c1_cycle{i+1}.gif',
