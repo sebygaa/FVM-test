@@ -15,7 +15,9 @@ import math
 # 4/21 -> x_cat = 0.6/ 0.2 => 0.4 uniform
 # 4/21 -> k_f_ref = 1E-3 => 3E-3
 # 4/21 -> k_list = [0.5,]*4  => [0.8,]*4
-# 4/22 -> k_list = [0.8,]*4 => [1.5,]*4
+# 4/22 -> k_list = [0.8,]*4 => [1.5,]*4 & k_f_ref = 3E-3 => 1E-2
+
+
 # %%
 # Adsorbent & Catalyst Conditions
 # %%
@@ -70,9 +72,9 @@ rho_ads = 1000 # kg/m3  //density of adsorbent
 rho_cat = 1000 # kg/m3  //density of catalyst
 
 #k_list = [0.05,]*4
-k_list = [0.8,]*4  # Adsorption rate constant (1/s)
+k_list = [1.5,]*4  # Adsorption rate constant (1/s)
 # Previously k_list = [0.5,]*4
-k_f_ref = 3E-3      # Kinetic parameter at T_ref : mol / (kg s) / (bar^2)
+k_f_ref = 1E-2      # Kinetic parameter at T_ref : mol / (kg s) / (bar^2)
 # Previously k_f_ref = 1E-3
 T_ref = 623         # K
 E_a_f = 1E4         # J/mol
@@ -343,7 +345,7 @@ for i in range(0, cycle_N):
         acc1.graph_timelapse(7,t_frame=1000,
                             label=f'No.{i+1} CO$_{2}$ uptake (mol/kg)',
                             filename =dir_name1+'/'+f_prefix1g+f'q4_cycle{i+1}.gif',
-                            y_limits=[-0.005,0.2], interval = 100)
+                            y_limits=[-0.005,0.5], interval = 100)
         
         acc1.graph_timelapse_y('P',t_frame=1000,
                             label=f'No.{i+1} Pressure',
