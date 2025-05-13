@@ -6,7 +6,7 @@ import numpy as np
 from numpy import trapz
 import os
 import matplotlib.pyplot as plt
-from datetime import datetime
+from datetime import datetime 
 import time
 import math
 
@@ -16,6 +16,8 @@ import math
 # 4/21 -> k_f_ref = 1E-3 => 3E-3
 # 4/21 -> k_list = [0.5,]*4  => [0.8,]*4
 # 4/22 -> k_list = [0.8,]*4 => [1.5,]*4 & k_f_ref = 3E-3 => 1E-2
+# 4/22 -> k_list = [1.5,]*4 => [3.0,]*4 & k_f_ref = 1E-2 => 2E-2
+
 
 
 # %%
@@ -72,9 +74,9 @@ rho_ads = 1000 # kg/m3  //density of adsorbent
 rho_cat = 1000 # kg/m3  //density of catalyst
 
 #k_list = [0.05,]*4
-k_list = [1.5,]*4  # Adsorption rate constant (1/s)
+k_list = [3.0,]*4  # Adsorption rate constant (1/s)
 # Previously k_list = [0.5,]*4
-k_f_ref = 1E-2      # Kinetic parameter at T_ref : mol / (kg s) / (bar^2)
+k_f_ref = 2E-2      # Kinetic parameter at T_ref : mol / (kg s) / (bar^2)
 # Previously k_f_ref = 1E-3
 T_ref = 623         # K
 E_a_f = 1E4         # J/mol
